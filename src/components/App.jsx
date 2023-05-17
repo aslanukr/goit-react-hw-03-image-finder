@@ -1,13 +1,12 @@
 import { Component } from 'react';
-// import { ToastContainer, toast } from 'react-toastify';
 import { getImages } from 'services/api';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 
 export class App extends Component {
   state = {
-    query: 'Lviv',
-    images: null,
+    query: '',
+    images: [],
     loading: false,
     error: '',
     page: 1,
