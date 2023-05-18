@@ -1,5 +1,17 @@
 import { Component } from 'react';
-import css from './Searchbar.module.css';
+import { ImSearch } from 'react-icons/im';
+import {
+  Header,
+  Logo,
+  LogoDot,
+  LogoLink,
+  LogoText,
+  LogoWrapper,
+  SearchForInput,
+  SearchForm,
+  SearchFormButton,
+} from './Searchbar.styled';
+import pixelLogo from '../../images/pixel.png';
 
 export class Searchbar extends Component {
   state = {
@@ -23,23 +35,31 @@ export class Searchbar extends Component {
     const { input } = this.state;
     return (
       <>
-        <header className={css.Searchbar}>
-          <form onSubmit={this.handleSubmit} className={css.SearchForm}>
-            <button type="submit" className={css.SearchFormButton}>
-              <span className="button-label">Search</span>
-            </button>
+        <Header>
+          <LogoWrapper>
+            <LogoLink href="">
+              <Logo src={pixelLogo} alt="pixel logo" />
+              <LogoText>
+                <LogoDot>.</LogoDot>picsEl
+              </LogoText>
+            </LogoLink>
+          </LogoWrapper>
 
-            <input
+          <SearchForm onSubmit={this.handleSubmit}>
+            <SearchFormButton type="submit">
+              <ImSearch size={24} color="red" />
+            </SearchFormButton>
+
+            <SearchForInput
               onChange={this.searchInputHandler}
-              className={css.SearchForInput}
               type="text"
               name="input"
               value={input}
               autoComplete="off"
               placeholder="Search images and photos"
             />
-          </form>
-        </header>
+          </SearchForm>
+        </Header>
       </>
     );
   }

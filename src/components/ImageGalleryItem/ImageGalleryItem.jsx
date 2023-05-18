@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Modal from 'components/Modal/Modal';
-import css from './ImageGalleryItem.module.css';
+import { Image, ImageItem } from './ImageGalleryItem.styled';
 
 export default class ImageGalleryItem extends Component {
   state = {
@@ -22,14 +22,9 @@ export default class ImageGalleryItem extends Component {
     const { showModal } = this.state;
     return (
       <>
-        <li className={css.ImageGalleryItem}>
-          <img
-            className={css.ImageGalleryItemImage}
-            src={image}
-            alt={tags}
-            onClick={this.handleImgClick}
-          />
-        </li>
+        <ImageItem>
+          <Image src={image} alt={tags} onClick={this.handleImgClick} />
+        </ImageItem>
         {showModal && (
           <Modal onClose={this.toggleModal} src={modalImage} alt={tags}></Modal>
         )}
