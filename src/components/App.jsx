@@ -15,6 +15,7 @@ export class App extends Component {
     error: '',
     page: 1,
     totalPages: 1,
+    totalHits: null,
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -48,6 +49,7 @@ export class App extends Component {
         return this.setState({
           images: images,
           totalPages: Math.ceil(totalHits / 12),
+          totalHits: totalHits,
         });
       } catch (error) {
         this.setState({ error: error.message });
@@ -93,8 +95,8 @@ export class App extends Component {
   };
 
   render() {
-    const { images, isLoading, totalPages, page } = this.state;
-    const showButton = images.length > 0 && totalPages > page;
+    const { images, isLoading, totalPages, page, totalHits } = this.state;
+    const showButton = images.length > 0 && totalPages > page && totalHits > 12;
 
     return (
       <>
