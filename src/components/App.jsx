@@ -14,24 +14,20 @@ export class App extends Component {
     isLoading: false,
     error: '',
     page: 1,
-    totalPages: 1,
     totalHits: null,
   };
 
   async componentDidUpdate(prevProps, prevState) {
-    const { query, page, totalPages } = this.state;
+    const { query, page, totalHits } = this.state;
 
     if (query === '') {
-      if (prevState.images.length > 0) {
-        this.setState({ images: [] });
-      }
       toast.warn('Please enter your search request');
       return;
     }
 
-    if (prevState.query !== query) {
+    if (prevState.query !== query || prevState.page !== page) {
       try {
-        this.setState({ isLoading: true, images: [], page: 1 });
+        this.setState({ isLoading: true });
         const { hits, totalHits } = await getImages(query, page);
         if (hits.length === 0) {
           toast.error(
@@ -39,55 +35,33 @@ export class App extends Component {
           );
           return;
         }
-        if (hits.length > 0) {
+        if (hits.length > 0 && page === 1) {
           toast.success(`Hooray! We found ${totalHits} images!`);
         }
+
         const images = hits.map(({ id, largeImageURL, webformatURL, tags }) => {
           return { id, largeImageURL, webformatURL, tags };
         });
 
-        return this.setState({
-          images: images,
-          totalPages: Math.ceil(totalHits / 12),
+        return this.setState(prevState => ({
+          images: [...prevState.images, ...images],
           totalHits: totalHits,
-        });
+        }));
       } catch (error) {
         this.setState({ error: error.message });
-        console.log(error);
+        console.log(error.message);
       } finally {
         this.setState({ isLoading: false });
       }
     }
 
-    if (prevState.page !== page) {
-      try {
-        this.setState({ isLoading: true });
-        const { hits } = await getImages(query, page);
-
-        const images = hits.map(({ id, largeImageURL, webformatURL, tags }) => {
-          return { id, largeImageURL, webformatURL, tags };
-        });
-
-        if (totalPages <= page) {
-          toast.info(
-            `We're sorry, but you've reached the end of search results.`
-          );
-        }
-
-        return this.setState(prevState => ({
-          images: [...prevState.images, ...images],
-        }));
-      } catch (error) {
-        this.setState({ error: error.message });
-        console.log(error);
-      } finally {
-        this.setState({ isLoading: false });
-      }
+    if (totalHits !== null && totalHits <= page * 12) {
+      toast.info(`We're sorry, but you've reached the end of search results.`);
     }
   }
 
   handleSearch = query => {
-    this.setState({ query });
+    this.setState({ query, images: [], page: 1 });
   };
 
   handleLoadMore = () => {
@@ -95,8 +69,8 @@ export class App extends Component {
   };
 
   render() {
-    const { images, isLoading, totalPages, page, totalHits } = this.state;
-    const showButton = images.length > 0 && totalPages > page && totalHits > 12;
+    const { images, isLoading, page, totalHits } = this.state;
+    const showButton = images.length > 0 && totalHits > page * 12;
 
     return (
       <>
