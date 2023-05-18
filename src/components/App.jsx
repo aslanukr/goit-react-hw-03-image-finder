@@ -18,7 +18,7 @@ export class App extends Component {
   };
 
   async componentDidUpdate(prevProps, prevState) {
-    const { query, page, totalHits } = this.state;
+    const { query, page, totalHits, images } = this.state;
 
     if (query === '') {
       toast.warn('Please enter your search request');
@@ -55,7 +55,7 @@ export class App extends Component {
       }
     }
 
-    if (totalHits !== null && totalHits <= page * 12) {
+    if (totalHits !== null && totalHits <= images.length) {
       toast.info(`We're sorry, but you've reached the end of search results.`);
     }
   }
