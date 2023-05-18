@@ -5,6 +5,7 @@ import { getImages } from 'services/api';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component {
   state = {
@@ -98,7 +99,7 @@ export class App extends Component {
     return (
       <>
         <Searchbar onSubmit={this.handleSearch} />
-        {isLoading && <h1>Loading...</h1>}
+        {isLoading && <Loader />}
         {images?.length > 0 && <ImageGallery images={images} />}
         {showButton && <Button onClick={this.handleLoadMore} />}
         <ToastContainer autoClose={1000} />
