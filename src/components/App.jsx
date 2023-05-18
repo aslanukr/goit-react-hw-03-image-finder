@@ -1,26 +1,45 @@
 import { Component } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { getImages } from 'services/api';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
+import { Button } from './Button/Button';
 
 export class App extends Component {
   state = {
     query: '',
     images: [],
-    loading: false,
+    isLoading: false,
     error: '',
     page: 1,
     totalPages: 1,
   };
 
   async componentDidUpdate(prevProps, prevState) {
-    const { query, page } = this.state;
+    const { query, page, totalPages } = this.state;
+
+    if (query === '') {
+      if (prevState.images.length > 0) {
+        this.setState({ images: [] });
+      }
+      toast.warn('Please enter your search request');
+      return;
+    }
 
     if (prevState.query !== query) {
       try {
-        this.setState({ loading: true });
+        this.setState({ isLoading: true, images: [], page: 1 });
         const { hits, totalHits } = await getImages(query, page);
-
+        if (hits.length === 0) {
+          toast.error(
+            'Sorry, there are no images matching your search query. Please try again.'
+          );
+          return;
+        }
+        if (hits.length > 0) {
+          toast.success(`Hooray! We found ${totalHits} images!`);
+        }
         const images = hits.map(({ id, largeImageURL, webformatURL, tags }) => {
           return { id, largeImageURL, webformatURL, tags };
         });
@@ -33,7 +52,33 @@ export class App extends Component {
         this.setState({ error: error.message });
         console.log(error);
       } finally {
-        this.setState({ loading: false });
+        this.setState({ isLoading: false });
+      }
+    }
+
+    if (prevState.page !== page) {
+      try {
+        this.setState({ isLoading: true });
+        const { hits } = await getImages(query, page);
+
+        const images = hits.map(({ id, largeImageURL, webformatURL, tags }) => {
+          return { id, largeImageURL, webformatURL, tags };
+        });
+
+        if (totalPages <= page) {
+          toast.info(
+            `We're sorry, but you've reached the end of search results.`
+          );
+        }
+
+        return this.setState(prevState => ({
+          images: [...prevState.images, ...images],
+        }));
+      } catch (error) {
+        this.setState({ error: error.message });
+        console.log(error);
+      } finally {
+        this.setState({ isLoading: false });
       }
     }
   }
@@ -42,13 +87,21 @@ export class App extends Component {
     this.setState({ query });
   };
 
+  handleLoadMore = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+  };
+
   render() {
-    const { images } = this.state;
+    const { images, isLoading, totalPages, page } = this.state;
+    const showButton = images.length > 0 && totalPages > page;
 
     return (
       <>
         <Searchbar onSubmit={this.handleSearch} />
-        {images && <ImageGallery images={images} />}
+        {isLoading && <h1>Loading...</h1>}
+        {images?.length > 0 && <ImageGallery images={images} />}
+        {showButton && <Button onClick={this.handleLoadMore} />}
+        <ToastContainer autoClose={1000} />
       </>
     );
   }
