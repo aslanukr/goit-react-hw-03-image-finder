@@ -70,14 +70,14 @@ export class App extends Component {
 
   render() {
     const { images, isLoading, page, totalHits } = this.state;
-    const showButton = images.length > 0 && totalHits > page * 12;
+    const showButton = images.length > 0 && totalHits > page * 12 && !isLoading;
 
     return (
       <>
         <Searchbar onSubmit={this.handleSearch} />
-        {isLoading && <Loader />}
         {images?.length > 0 && <ImageGallery images={images} />}
         {showButton && <Button onClick={this.handleLoadMore} />}
+        {isLoading && <Loader />}
         <ToastContainer autoClose={1000} />
       </>
     );
