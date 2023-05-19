@@ -17,3 +17,8 @@ export const ModalLayer = styled.div`
   max-width: calc(100vw - 48px);
   max-height: calc(100vh - 20px);
 `;
+
+export const ModalImage = styled.img`
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 20px);
+`;
